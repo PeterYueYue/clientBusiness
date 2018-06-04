@@ -1,27 +1,65 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue';
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-default/index.css';
-import App from './App';
-import router from './router';
-// import './libs/jquery-3.2.1.min.js';
-import './libs/base.css';
-import './libs/fonticon.js';
-import echarts from "echarts";
-import store from './store';
+import babelpolyfill from 'babel-polyfill'
+import Vue from 'vue'
+import App from './App'
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-default/index.css'
+// import './assets/theme/theme-green/index.css'
+import VueRouter from 'vue-router'
+import store from './vuex/store'
+import Vuex from 'vuex'
+//import NProgress from 'nprogress'
+//import 'nprogress/nprogress.css'
+import './styles/base.css'
+import './styles/fonticon.js';
+import routes from './routes'
+import  './common/js/font_al.js'
+// import Mock from './mock'
+// Mock.bootstrap();
+// import './styles/fonticon.js'
+import 'font-awesome/css/font-awesome.min.css'
 import axios from 'axios';
-Vue.prototype.$http = axios;
+Vue.prototype.axios = axios;
 import qs from 'qs';
 Vue.prototype.qs = qs;
-Vue.use(ElementUI, echarts);
-Vue.config.productionTip = false;
 
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  router,
-  store,
-  template: '<App/>',
-  components: { App }
+
+// 点击复制到粘贴板
+import VueClipboard from 'vue-clipboard2'
+
+Vue.use(VueClipboard)
+Vue.use(ElementUI);
+Vue.use(VueRouter);
+Vue.use(Vuex);
+
+//NProgress.configure({ showSpinner: false });
+
+const router = new VueRouter({
+	routes
 });
+
+router.beforeEach((to, from, next) => {
+	//NProgress.start();
+	if (to.path == '/login') {
+		sessionStorage.removeItem('user');
+	}
+	let user = JSON.parse(sessionStorage.getItem('user'));
+	if (!user && to.path != '/login') {
+		next({ path: '/login' })
+	} else {
+		next()
+	}
+});
+
+//router.afterEach(transition => {
+//NProgress.done();
+//});
+
+new Vue({
+	//el: '#app',
+	//template: '<App/>',
+	router,
+	store,
+	//components: { App }
+	render: h => h(App)
+}).$mount('#app');
+
